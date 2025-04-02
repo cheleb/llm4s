@@ -1,10 +1,27 @@
-ThisBuild / scalaVersion     := "2.13.16"
-ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "org.llm4s"
-ThisBuild / organizationName := "llm4s"
+inThisBuild(
+  List(
+    scalaVersion     := "2.13.16",
+    version          := "0.1.0-SNAPSHOT",
+    organization     := "org.llm4s",
+    organizationName := "llm4s",
 
-// Scalafmt configuration
-ThisBuild / scalafmtOnCompile := true
+    // Scalafmt configuration
+    scalafmtOnCompile := true,
+    // Maven central repository deployment
+    homepage               := Some(url("https://github.com/llm4s/")),
+    sonatypeCredentialHost := "s01.oss.sonatype.org",
+    sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    pgpPublicRing          := file("/tmp/public.asc"),
+    pgpSecretRing          := file("/tmp/secret.asc"),
+    pgpPassphrase          := sys.env.get("PGP_PASSWORD").map(_.toArray),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/llm4s/llm4s/"),
+        "scm:git:git@github.com:llm4s/llm4s.git"
+      )
+    ),
+  )
+)
 
 lazy val root = (project in file("."))
   .aggregate(shared, workspaceRunner)
@@ -50,6 +67,9 @@ lazy val workspaceRunner = (project in file("workspaceRunner"))
       "org.scalatest" %% "scalatest"       % "3.2.19" % Test
     )
   )
+  .settings(
+    publish / skip := true
+  )
 
 lazy val samples = (project in file("samples"))
   .dependsOn(shared, root)
@@ -59,4 +79,7 @@ lazy val samples = (project in file("samples"))
       "ch.qos.logback" % "logback-classic" % "1.5.18",
       "org.scalatest" %% "scalatest"       % "3.2.19" % Test
     )
+  )
+  .settings(
+    publish / skip := true
   )
